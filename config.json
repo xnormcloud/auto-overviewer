@@ -1,0 +1,13 @@
+{
+    "python_ver": "",
+    "time_zone": "",
+    "min": "*",
+    "hour": "*",
+    "dayom": "*",
+    "month": "*",
+    "dayow": "*",
+    "minecraft_overviewer_loc": "",
+    "minecraft_overviewer_configfile_loc": "",
+    "render_out_dir": "",
+    "assets": ["compass_upper-left.png", "index.html", "favicon.png"]
+}
