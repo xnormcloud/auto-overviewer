@@ -20,6 +20,9 @@ var job = new CronJob(cron_patern, function() {
             ErrorExit();
         }
         console.log(`Extraction completed`.green);
+        console.log(`Starting rendering process`.cyan)
+
+
 
         var render_shell_out = shell.exec(`python${config.python_ver} ${config.minecraft_overviewer_loc} --config=${config.minecraft_overviewer_configfile_loc}`);
         var renderResult = (render_shell_out.substring(render_shell_out.length - 28, render_shell_out.length)).replace(/\s+/g, '');
@@ -42,11 +45,11 @@ var job = new CronJob(cron_patern, function() {
             console.log(` => ${config.assets[i]} copied to render folder.`.cyan);
         }
         console.log('New Assets Copied'.green);
-        console.log(`AUTO RENDER COMPLETE!`.green + ` Last Render: ${interval.prev().toString()}`.cyan);
+        console.log(`${server.name} AUTO RENDER COMPLETE!`.green + ` Last Render: ${interval.prev().toString()}`.cyan);
     }
     
-    
-    console.log(`Next Render scheduled for ${interval.next().toString()}`.yellow);
+    console.log("Bulk worlds renders complete!".green)
+    console.log(`Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
 }, null, true, config.time_zone);
 job.start();
 
