@@ -14,7 +14,7 @@ var job = new CronJob(cron_patern, function() {
 
         console.log(`Extracting ${server.name}'s world from docker container...`.yellow)
         try {
-            shell.exec(`docker cp ${server.container_id}:/home/container/qb_multi/slot1 /home/wrenders/sources/${server.name}`);
+            shell.exec(`docker cp ${server.container_id}:/home/container/qb_multi/slot1/world /home/wrenders/sources/${server.name}`);
         } catch (error) {
             console.log('Error while extracting source world from docker container'.red);
             ErrorExit();
@@ -43,7 +43,8 @@ var job = new CronJob(cron_patern, function() {
                 ErrorExit();
             }
             console.log(` => ${config.assets[i]} copied to render folder.`.cyan);
-        }
+        }   
+        shell.rm('-r', `/home/wrenders/sources/${server.name}/world`);
         console.log('New Assets Copied'.green);
         console.log(`${server.name} AUTO RENDER COMPLETE!`.green + ` Last Render: ${interval.prev().toString()}`.cyan);
     }
