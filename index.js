@@ -19,7 +19,7 @@ var job = new CronJob(cron_patern, function() {
             shell.exec(`docker cp ${server.container_id}:/home/container/qb_multi/slot1/world /home/wrenders/sources/${server.name}`);
         } catch (error) {
             console.log('Error while extracting source world from docker container'.red);
-            ErrorExit();
+            ErrorExit("Docker container extraction process failure");
         }
         console.log(`Extraction completed`.green);
         console.log(`Starting rendering process`.cyan)
@@ -29,7 +29,7 @@ var job = new CronJob(cron_patern, function() {
 
         if (renderResult != "openindex.htmltoviewit.") {
             console.log(`Error Minecraft Overviewer Render Failed`.red);
-            ErrorExit();
+            ErrorExit(render_shell_out);
         } else {
             console.log('Render complete!'.green);
         }
@@ -40,7 +40,7 @@ var job = new CronJob(cron_patern, function() {
                 shell.cp(`./assets/${config.assets[i]}`, `${config.render_out_dir}`);
             } catch (error) {
                 console.log('Error while copying assets to render folder'.red);
-                ErrorExit();
+                ErrorExit("Assets copying process failure");
             }
             console.log(` => ${config.assets[i]} copied to render folder.`.cyan);
         }   
@@ -83,7 +83,7 @@ function BulkComplete(){
         }
     })
 }
-function ErrorExit() {
+function ErrorExit(errormsg) {
     console.log(`Failed to complete Minecraft Auto Overviewer schedule`.red)
     console.log(`Sending cash notification to Xnorm Admins`.cyan)
     const transporter = nodemailer.createTransport({
@@ -100,7 +100,7 @@ function ErrorExit() {
         from: `Xnorm World <${config.contacter}>`,
         to: 'xnorm.online@gmail.com',
         subject: `System Fail`,
-        text: "Something went wrong, and Minecraft Auto Overviewer stopped",
+        text: `Something went wrong, and Minecraft Auto Overviewer stopped\n\n${errormsg}`,
     }
     
     transporter.sendMail(mailOptions, (error, info)=>{
