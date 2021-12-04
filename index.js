@@ -9,7 +9,7 @@ const mailer_config = require('./mailer_config.json');
 const cron_patern = `${config.min} ${config.hour} ${config.dayom} ${config.month} ${config.dayow}`;
 var interval = parser.parseExpression(cron_patern);
 
-console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Render scheduled for ${interval.next().toString()}`.yellow);
+console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
 var job = new CronJob(cron_patern, function() {
     for (var server of config.servers){
         console.log(`${server.name} render Started!`.green);
@@ -24,7 +24,7 @@ var job = new CronJob(cron_patern, function() {
         console.log(`Extraction completed`.green);
         console.log(`Starting rendering process`.cyan)
 
-        var render_shell_out = shell.exec(`python${config.python_ver} ${config.minecraft_overviewer_loc} --config=${config.minecraft_overviewer_configfile_loc}`);
+        var render_shell_out = shell.exec(`python${config.python_ver} ${config.minecraft_overviewer_loc} --config=./overviewer/configs/${server.name}.txt`);
         var renderResult = (render_shell_out.substring(render_shell_out.length - 28, render_shell_out.length)).replace(/\s+/g, '');
 
         if (renderResult != "openindex.htmltoviewit.") {
@@ -46,6 +46,7 @@ var job = new CronJob(cron_patern, function() {
         }   
         shell.rm('-r', `/home/wrenders/sources/${server.name}/world`);
         console.log('New Assets Copied'.green);
+        RenderComplete(server);
         console.log(`${server.name} AUTO RENDER COMPLETE!`.green + ` Last Render: ${interval.prev().toString()}`.cyan);
     }
     BulkComplete()
@@ -54,6 +55,34 @@ var job = new CronJob(cron_patern, function() {
 }, null, true, config.time_zone);
 job.start();
 
+function RenderComplete(server){
+    const transporter = nodemailer.createTransport({
+        host: mailer_config.contacter_server,
+        port: 465,
+        secure: true,
+        auth: {
+            user: mailer_config.contacter,
+            pass: mailer_config.contacter_pass
+        }
+    })
+    
+    const mailOptions = {
+        from: `Xnorm World <${mailer_config.contacter}>`,
+        to: server.email,
+        text: "Hi! Your render is finally complete!",
+        html : { path: `email/templates/${server.name}.html` },
+    }
+    
+    transporter.sendMail(mailOptions, (error, info)=>{
+        if(error){
+            console.log("Crash email report failed".red);
+            res.send('error');
+        } else {
+            console.log(`Email sent to Xnorm`.green);
+            res.send('success')
+        }
+    })
+}
 
 function BulkComplete(){
     const transporter = nodemailer.createTransport({
@@ -61,13 +90,13 @@ function BulkComplete(){
         port: 465,
         secure: true,
         auth: {
-            user: config.contacter,
-            pass: config.contacter_pass
+            user: mailer_config.contacter,
+            pass: mailer_config.contacter_pass
         }
     })
     
     const mailOptions = {
-        from: `Xnorm World <${config.contacter}>`,
+        from: `Xnorm World <${mailer_config.contacter}>`,
         to: 'xnorm.online@gmail.com',
         subject: `Bulk Rendering Complete!`,
         text: "All scheduled renders were completed",

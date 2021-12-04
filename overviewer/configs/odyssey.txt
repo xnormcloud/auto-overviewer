@@ -1,0 +1,21 @@
+worlds["world"] = "/home/wrenders/source/odyssey/world"
+world="world"
+outputdir = "/home/wrenders/odyssey"
+processes = 4
+
+renders["Overworld"] = {
+    "title": "3D Overworld",
+    "rendermode": "smooth_lighting",
+    "dimension": "overworld",
+}
+
+renders["Nether"] = {
+    "title": "3D Nether",
+    "rendermode": "normal",
+    "dimension": "nether", 
+}
+
+renders["End"] = {
+    "title": "3D End",
+    "dimension": "end",
+}
