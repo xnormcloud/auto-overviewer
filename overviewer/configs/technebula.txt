@@ -1,6 +1,6 @@
-worlds["world"] = "/home/wrenders/source/technebula/world"
+worlds["world"] = "/home/wrenders/sources/technebula/world"
 world="world"
-outputdir = "/home/wrenders/technebula"
+outputdir = "/home/wrenders/renders/technebula"
 processes = 4
 
 renders["Overworld"] = {

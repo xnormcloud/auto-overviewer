@@ -12,7 +12,7 @@ var interval = parser.parseExpression(cron_patern);
 console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
 var job = new CronJob(cron_patern, function() {
     for (var server of config.servers){
-        console.log(`${server.name} render Started!`.green);
+        console.log(`${server.name} render process Started!`.green);
 
         console.log(`Extracting ${server.name}'s world from docker container...`.yellow)
         try {
@@ -20,6 +20,7 @@ var job = new CronJob(cron_patern, function() {
         } catch (error) {
             console.log('Error while extracting source world from docker container'.red);
             ErrorExit("Docker container extraction process failure");
+            break;
         }
         console.log(`Extraction completed`.green);
         console.log(`Starting rendering process`.cyan)
@@ -35,22 +36,22 @@ var job = new CronJob(cron_patern, function() {
         }
 
         console.log('Copying new assets'.yellow);
-        for (var i = 0; i < config.assets.length; i++) {
+        for (var i = 0; i < config.assets.length(); i++) {
             try {
-                shell.cp(`./assets/${config.assets[i]}`, `${config.render_out_dir}`);
+                shell.cp(`./assets/${config.assets[i]}`, `${config.render_out_dir}/${server.name}`);
             } catch (error) {
                 console.log('Error while copying assets to render folder'.red);
                 ErrorExit("Assets copying process failure");
             }
-            console.log(` => ${config.assets[i]} copied to render folder.`.cyan);
+            console.log(` => ${config.server.assets[i]} copied to render folder.`.cyan);
         }   
         shell.rm('-r', `/home/wrenders/sources/${server.name}/world`);
         console.log('New Assets Copied'.green);
         RenderComplete(server);
         console.log(`${server.name} AUTO RENDER COMPLETE!`.green + ` Last Render: ${interval.prev().toString()}`.cyan);
     }
-    BulkComplete()
-    console.log("Bulk worlds renders complete!".green)
+    BulkComplete();
+    console.log("Bulk worlds renders complete!".green);
     console.log(`Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
 }, null, true, config.time_zone);
 job.start();
@@ -97,7 +98,7 @@ function BulkComplete(){
     
     const mailOptions = {
         from: `Xnorm World <${mailer_config.contacter}>`,
-        to: 'xnorm.online@gmail.com',
+        to: mailer_config.admin_email,
         subject: `Bulk Rendering Complete!`,
         text: "All scheduled renders were completed",
     }
@@ -112,6 +113,7 @@ function BulkComplete(){
         }
     })
 }
+
 function ErrorExit(errormsg) {
     console.log(`Failed to complete Minecraft Auto Overviewer schedule`.red)
     console.log(`Sending cash notification to Xnorm Admins`.cyan)
@@ -127,7 +129,7 @@ function ErrorExit(errormsg) {
     
     const mailOptions = {
         from: `Xnorm World <${config.contacter}>`,
-        to: 'xnorm.online@gmail.com',
+        to: mailer_config.admin_email,
         subject: `System Fail`,
         text: `Something went wrong, and Minecraft Auto Overviewer stopped\n\n${errormsg}`,
     }

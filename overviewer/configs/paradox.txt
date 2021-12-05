@@ -1,6 +1,6 @@
-worlds["world"] = "/home/wrenders/source/paradox/world"
+worlds["world"] = "/home/wrenders/sources/paradox/world"
 world="world"
-outputdir = "/home/wrenders/paradox"
+outputdir = "/home/wrenders/renders/paradox"
 processes = 4
 
 renders["Overworld"] = {
