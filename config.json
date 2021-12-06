@@ -12,39 +12,39 @@
     "servers": [
         {
             "name": "technebula", 
-            "container_id": "f3c39b2b-e3b6-44d3-a252-3f22e1295f3e",
+            "container_id": "c78c3e88-695f-4209-b3f3-2aee80965ebf",
             "assets": ["compass_upper-left.png", "index.html", "favicon.png"],
-            "email": "thegametesters1995@gmail.com"
+            "email": "flipnoteumbreon99@gmail.com"
         },
         {
             "name": "aeternum", 
-            "container_id": "f3c39b2b-e3b6-44d3-a252-3f22e1295f3e",
+            "container_id": "732ff7ab-5f2f-48d1-9425-0be7c54cb430",
             "assets": ["compass_upper-left.png", "index.html", "favicon.png"],
-            "email": "thegametesters1995@gmail.com"
+            "email": "aeternumsmp@gmail.com"
         },
         {
             "name": "templar", 
-            "container_id": "f3c39b2b-e3b6-44d3-a252-3f22e1295f3e",
+            "container_id": "d2ff536d-1fd5-4174-92fa-fc48218f088f",
             "assets": ["compass_upper-left.png", "index.html", "favicon.png"],
-            "email": "thegametesters1995@gmail.com"
+            "email": "templarsmp@gmail.com"
         },
         {
             "name": "paradox", 
-            "container_id": "f3c39b2b-e3b6-44d3-a252-3f22e1295f3e",
+            "container_id": "eba9ce76-e4fa-491a-8fde-118a9ce99836",
             "assets": ["compass_upper-left.png", "index.html", "favicon.png"],
-            "email": "thegametesters1995@gmail.com"
+            "email": "kuwugame01@gmail.com"
         },
         {
             "name": "tecnotech", 
-            "container_id": "f3c39b2b-e3b6-44d3-a252-3f22e1295f3e",
+            "container_id": "ef88c54b-94f9-4d96-9797-e9f21e7f8409",
             "assets": ["compass_upper-left.png", "index.html", "favicon.png"],
-            "email": "thegametesters1995@gmail.com"
+            "email": "tecnotech381@gmail.com"
         },
         {
             "name": "odyssey", 
-            "container_id": "f3c39b2b-e3b6-44d3-a252-3f22e1295f3e",
+            "container_id": "ed9fdc96-bffb-48be-bbb7-f7396b92a211",
             "assets": ["compass_upper-left.png", "index.html", "favicon.png"],
-            "email": "thegametesters1995@gmail.com"
+            "email": "00014tmp@gmail.com"
         }
     ]
 }

@@ -89,7 +89,7 @@ async function RenderComplete(server) {
                 console.log(error);
                 reject(err);
             } else {
-                console.log(`Email sent to`);
+                console.log(`Email sent to ${server.name} owner/s`);
                 resolve(info);
             }
         });
@@ -144,7 +144,7 @@ async function ErrorExit(errormsg) {
     const mailOptions = {
         from: `Xnorm World <${mailer_config.contacter}>`,
         to: mailer_config.admin_email,
-        subject: `System Fail`,
+        subject: `⚠ System Fail`,
         text: `Something went wrong, and Minecraft Auto Overviewer stopped\n\n${errormsg}`,
     }
     return new Promise(function(resolve, reject) {
