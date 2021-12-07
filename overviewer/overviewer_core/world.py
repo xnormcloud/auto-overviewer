@@ -274,8 +274,10 @@ class RegionSet(object):
         elif self.rel == "region":
             # this is the main world
             self.type = None
+        elif "entities" in os.path.split(self.rel):
+            self.type = "entities"
         else:
-            logging.warning("Unknown region type in %r", regiondir)
+            logging.warning("Unknown region type in %r, rel %r", regiondir, self.rel)
             self.type = "__unknown"
 
         logging.debug("Scanning regions.  Type is %r" % self.type)
@@ -341,6 +343,8 @@ class RegionSet(object):
             'minecraft:jungle_leaves': (18, 3),
             'minecraft:acacia_leaves': (18, 4),
             'minecraft:dark_oak_leaves': (18, 5),
+            'minecraft:flowering_azalea_leaves': (18, 6),
+            'minecraft:azalea_leaves': (18, 7),
             'minecraft:sponge': (19, 0),
             'minecraft:wet_sponge': (19, 1),
             'minecraft:glass': (20, 0),
@@ -502,7 +506,10 @@ class RegionSet(object):
             'minecraft:nether_wart': (115, 0),
             'minecraft:enchanting_table': (116, 0),
             'minecraft:brewing_stand': (117, 0),
-            'minecraft:cauldron': (118, 0),
+            'minecraft:cauldron': (118, 1 << 2),
+            'minecraft:water_cauldron': (118, 1 << 2),
+            'minecraft:lava_cauldron': (118, (2 << 2) | 3),
+            'minecraft:powder_snow_cauldron': (118, 3 << 2),
             'minecraft:end_portal': (119, 0),
             'minecraft:end_portal_frame': (120, 0),
             'minecraft:end_stone': (121, 0),
@@ -621,6 +628,7 @@ class RegionSet(object):
             'minecraft:green_carpet': (171, 13),
             'minecraft:red_carpet': (171, 14),
             'minecraft:black_carpet': (171, 15),
+            'minecraft:moss_carpet': (171, 16),
             'minecraft:terracotta': (172, 0),
             'minecraft:coal_block': (173, 0),
             'minecraft:packed_ice': (174, 0),
@@ -667,7 +675,8 @@ class RegionSet(object):
             'minecraft:purpur_slab': (205, 0),
             'minecraft:end_stone_bricks': (206, 0),
             'minecraft:beetroots': (207, 0),
-            'minecraft:grass_path': (208, 0),
+            'minecraft:dirt_path': (208, 0),
+            'minecraft:grass_path': (208, 0),   # compatibility
             'minecraft:repeating_command_block': (210, 0),
             'minecraft:chain_command_block': (211, 0),
             'minecraft:frosted_ice': (212, 0),
@@ -767,6 +776,92 @@ class RegionSet(object):
             'minecraft:soul_fire': (1040, 0),
             # quartz bricks
             'minecraft:quartz_bricks': (1041, 0),
+
+            # 1.17 blocks go here
+            'minecraft:amethyst_block': (1042, 0),
+            'minecraft:raw_iron_block': (1043, 0),
+            'minecraft:raw_gold_block': (1044, 0),
+            'minecraft:budding_amethyst': (1045, 0),
+            'minecraft:copper_block':   (1046, 0),
+            'minecraft:exposed_copper':   (1047, 0),
+            'minecraft:weathered_copper':   (1048, 0),
+            'minecraft:oxidized_copper':   (1049, 0),
+            'minecraft:waxed_copper_block':   (1050, 0),
+            'minecraft:waxed_exposed_copper':   (1051, 0),
+            'minecraft:waxed_weathered_copper':   (1052, 0),
+            'minecraft:waxed_oxidized_copper':   (1053, 0),
+            'minecraft:cut_copper':   (1054, 0),
+            'minecraft:exposed_cut_copper':   (1055, 0),
+            'minecraft:weathered_cut_copper':   (1056, 0),
+            'minecraft:oxidized_cut_copper':   (1057, 0),
+            'minecraft:waxed_cut_copper':   (1058, 0),
+            'minecraft:waxed_exposed_cut_copper':   (1059, 0),
+            'minecraft:waxed_weathered_cut_copper':   (1060, 0),
+            'minecraft:waxed_oxidized_cut_copper':   (1061, 0),
+            'minecraft:raw_copper_block': (1062, 0),
+            'minecraft:copper_ore': (1063, 0),
+            'minecraft:cut_copper_stairs': (1064, 0),
+            'minecraft:exposed_cut_copper_stairs': (1065, 0),
+            'minecraft:weathered_cut_copper_stairs': (1066, 0),
+            'minecraft:oxidized_cut_copper_stairs': (1067, 0),
+            'minecraft:waxed_cut_copper_stairs': (1068, 0),
+            'minecraft:waxed_exposed_cut_copper_stairs': (1069, 0),
+            'minecraft:waxed_weathered_cut_copper_stairs': (1070, 0),
+            'minecraft:waxed_oxidized_cut_copper_stairs': (1071, 0),
+            'minecraft:cut_copper_slab': (1072, 0),
+            'minecraft:exposed_cut_copper_slab': (1073, 0),
+            'minecraft:weathered_cut_copper_slab': (1074, 0),
+            'minecraft:oxidized_cut_copper_slab': (1075, 0),
+            'minecraft:waxed_cut_copper_slab': (1076, 0),
+            'minecraft:waxed_exposed_cut_copper_slab': (1077, 0),
+            'minecraft:waxed_weathered_cut_copper_slab': (1078, 0),
+            'minecraft:waxed_oxidized_cut_copper_slab': (1079, 0),
+            'minecraft:moss_block': (1080, 0),
+            'minecraft:calcite': (1081, 0),
+            'minecraft:rooted_dirt': (1082, 0),
+            'minecraft:deepslate': (1083, 0),
+            'minecraft:infested_deepslate': (1083, 0),
+            'minecraft:cobbled_deepslate': (1084, 0),
+            'minecraft:polished_deepslate': (1085, 0),
+            'minecraft:deepslate_coal_ore': (1086, 0),
+            'minecraft:deepslate_iron_ore': (1087, 0),
+            'minecraft:deepslate_copper_ore': (1088, 0),
+            'minecraft:deepslate_gold_ore': (1089, 0),
+            'minecraft:deepslate_emerald_ore': (1090, 0),
+            'minecraft:deepslate_lapis_ore': (1091, 0),
+            'minecraft:deepslate_diamond_ore': (1092, 0),
+            'minecraft:deepslate_redstone_ore': (1093, 0),
+            'minecraft:deepslate_bricks': (1094, 0),
+            'minecraft:cracked_deepslate_bricks': (1095, 0),
+            'minecraft:deepslate_tiles': (1096, 0),
+            'minecraft:cracked_deepslate_tiles': (1097, 0),
+            'minecraft:chiseled_deepslate': (1098, 0),
+
+            'minecraft:cobbled_deepslate_stairs': (1099, 0),
+            'minecraft:polished_deepslate_stairs': (1100, 0),
+            'minecraft:deepslate_brick_stairs': (1101, 0),
+            'minecraft:deepslate_tile_stairs': (1102, 0),
+
+            'minecraft:cobbled_deepslate_slab': (1103, 0),
+            'minecraft:polished_deepslate_slab': (1104, 0),
+            'minecraft:deepslate_brick_slab': (1105, 0),
+            'minecraft:deepslate_tile_slab': (1106, 0),
+
+            'minecraft:dripstone_block': (1107, 0),
+            'minecraft:smooth_basalt': (1108, 0),
+            'minecraft:tuff': (1109, 0),
+            'minecraft:pointed_dripstone': (1110, 0),
+
+            'minecraft:powder_snow': (1111, 0),
+            'minecraft:hanging_roots': (1112, 0),
+            'minecraft:small_amethyst_bud': (1113, 0),
+            'minecraft:medium_amethyst_bud': (1114, 0),
+            'minecraft:large_amethyst_bud': (1115, 0),
+            'minecraft:cave_vines_plant': (1116, 0),
+            'minecraft:cave_vines': (1117, 0),
+            'minecraft:lightning_rod': (1118, 0),
+            'minecraft:glow_lichen': (1119, 0),
+            'minecraft:spore_blossom': (1120, 0),
 
             # New blocks
             'minecraft:carved_pumpkin': (11300, 0),
@@ -910,6 +1005,10 @@ class RegionSet(object):
             'minecraft:blackstone_wall': (1806, 0),
             'minecraft:polished_blackstone_wall': (1807, 0),
             'minecraft:polished_blackstone_brick_wall': (1808, 0),
+            'minecraft:cobbled_deepslate_wall': (1809, 0),
+            'minecraft:polished_deepslate_wall': (1810, 0),
+            'minecraft:deepslate_brick_wall': (1811, 0),
+            'minecraft:deepslate_tile_wall': (1812, 0),
         }
 
         colors = [   'white', 'orange', 'magenta', 'light_blue',
@@ -952,10 +1051,25 @@ class RegionSet(object):
                         'minecraft:mossy_cobblestone_slab','minecraft:mossy_stone_brick_slab',
                         'minecraft:smooth_quartz_slab','minecraft:smooth_stone_slab',
                         'minecraft:blackstone_slab','minecraft:polished_blackstone_slab',
-                        'minecraft:polished_blackstone_brick_slab'
+                        'minecraft:polished_blackstone_brick_slab', 'minecraft:cobbled_deepslate_slab',
+                        'minecraft:polished_deepslate_slab', 'minecraft:deepslate_brick_slab',
+                        'minecraft:deepslate_tile_slab'
                          )
 
         prismarine_slabs = ('minecraft:prismarine_slab','minecraft:dark_prismarine_slab','minecraft:prismarine_brick_slab')
+        copper_slabs = (
+            'minecraft:cut_copper_slab',
+            'minecraft:exposed_cut_copper_slab',
+            'minecraft:weathered_cut_copper_slab',
+            'minecraft:oxidized_cut_copper_slab',
+            'minecraft:waxed_cut_copper_slab',
+            'minecraft:waxed_exposed_cut_copper_slab',
+            'minecraft:waxed_weathered_cut_copper_slab',
+            'minecraft:waxed_oxidized_cut_copper_slab'
+        )
+
+        colors = ['white', 'orange', 'magenta', 'light_blue', 'yellow', 'lime', 'pink', 'gray', 'light_gray', 'cyan',
+                  'purple', 'blue', 'brown', 'green', 'red', 'black']
 
         key = palette_entry['Name']
         (block, data) = self._blockmap[key]
@@ -992,7 +1106,7 @@ class RegionSet(object):
         elif key in ('minecraft:sunflower', 'minecraft:lilac', 'minecraft:tall_grass', 'minecraft:large_fern', 'minecraft:rose_bush', 'minecraft:peony'):
             if palette_entry['Properties']['half'] == 'upper':
                 data |= 0x08
-        elif key in wood_slabs + stone_slabs + prismarine_slabs:
+        elif key in wood_slabs + stone_slabs + prismarine_slabs + copper_slabs:
         # handle double slabs 
             if palette_entry['Properties']['type'] == 'top':
                 data |= 0x08
@@ -1075,6 +1189,18 @@ class RegionSet(object):
                     elif key == 'minecraft:polished_blackstone_brick_slab':
                         block = 1026   # polished_blackstone_bricks
                         data = 0
+                    elif key == 'minecraft:cobbled_deepslate_slab':
+                        block = 1084  # 'minecraft:cobbled_deepslate'
+                        data = 0
+                    elif key == 'minecraft:polished_deepslate_slab':
+                        block = 1085  # 'minecraft:polished_deepslate'
+                        data = 0
+                    elif key == 'minecraft:deepslate_brick_slab':
+                        block = 1094  # 'minecraft:deepslate_bricks'
+                        data = 0
+                    elif key == 'minecraft:deepslate_tile_slab':
+                        block = 1096  # 'minecraft:deepslate_tiles'
+                        data = 0
 
                 elif key in  prismarine_slabs:
                     block = 168         # minecraft:prismarine variants
@@ -1084,6 +1210,10 @@ class RegionSet(object):
                         data = 1
                     elif key == 'minecraft:dark_prismarine_slab':
                         data = 2
+                elif key in copper_slabs:
+                    # dumb hack because I'm lazy but this function is horrid anyway
+                    block = block - 18
+
 
         elif key in ['minecraft:ladder', 'minecraft:chest', 'minecraft:ender_chest',
                      'minecraft:trapped_chest', 'minecraft:furnace',
@@ -1138,7 +1268,8 @@ class RegionSet(object):
                 data = 3
             if axis == 'z':
                 data = 4
-        elif key in ['minecraft:basalt', 'minecraft:polished_basalt', 'minecraft:chain']:
+        elif key in ['minecraft:basalt', 'minecraft:polished_basalt', 'minecraft:chain', 'minecraft:purpur_pillar',
+                     'minecraft:deepslate']:
             axis = palette_entry['Properties']['axis']
             data = {'y': 0, 'x': 1, 'z': 2}[axis]
         elif key in ['minecraft:redstone_torch','minecraft:redstone_wall_torch','minecraft:wall_torch',
@@ -1188,10 +1319,14 @@ class RegionSet(object):
                 data = p['rotation']
         elif key.endswith('_fence'):
             p = palette_entry['Properties']
-            if p['north'] == 'true': data |= 1
-            if p['west']  == 'true': data |= 2
-            if p['south'] == 'true': data |= 4
-            if p['east']  == 'true': data |= 8
+            if p['north'] == 'true':
+                data |= 1
+            if p['east'] == 'true':
+                data |= 2
+            if p['south'] == 'true':
+                data |= 4
+            if p['west'] == 'true':
+                data |= 8
         elif key.endswith('_stairs'):
             facing = palette_entry['Properties']['facing']
             if   facing == 'south': data = 2
@@ -1243,8 +1378,11 @@ class RegionSet(object):
             data |= {'south': 0, 'west': 1, 'north': 2, 'east': 3}[facing]
             if palette_entry['Properties'].get('eye', 'false') == 'true':
                 data |= 4
-        elif key == 'minecraft:cauldron':
-            data = int(palette_entry['Properties'].get('level', '0'))
+        elif key == 'minecraft:respawn_anchor':
+            data = int(palette_entry['Properties']['charges'])
+        elif key in ['minecraft:cauldron', 'minecraft:water_cauldron',
+                     'minecraft:lava_cauldron', 'minecraft:powder_snow_cauldron']:
+            data |= int(palette_entry.get('Properties', {}).get('level', '0'))
         elif key == 'minecraft:structure_block':
             block_mode = palette_entry['Properties'].get('mode', 'save')
             data = {'save': 0, 'load': 1, 'corner': 2, 'data': 3}.get(block_mode, 0)
@@ -1268,6 +1406,43 @@ class RegionSet(object):
             elif key == 'minecraft:bell':
                 data |= {'floor': 0, 'ceiling': 4, 'single_wall': 8,
                          'double_wall': 12}[p['attachment']]
+        elif key in ['minecraft:iron_bars', 'minecraft:glass_pane'] or \
+                key in ['minecraft:%s_stained_glass_pane' % item for item in colors]:
+            p = palette_entry['Properties']
+            if p['north'] == 'true':
+                data |= (1 << 4)
+            if p['east'] == 'true':
+                data |= (2 << 4)
+            if p['south'] == 'true':
+                data |= (4 << 4)
+            if p['west'] == 'true':
+                data |= (8 << 4)
+        elif key == 'minecraft:pointed_dripstone':
+            p = palette_entry['Properties']
+            data = {'tip': 0, 'tip_merge': 1, 'middle': 2, 'frustum': 3, 'base': 4}[p['thickness']]
+            data |= {'up': 0, 'down': 0b1000}[p['vertical_direction']]
+        elif key in ['minecraft:small_amethyst_bud', 'minecraft:medium_amethyst_bud', 'minecraft:large_amethyst_bud',
+                     'minecraft:lightning_rod']:
+            p = palette_entry['Properties']
+            data = {'down': 0, 'up': 1, 'east': 2, 'south': 3, 'west': 4, 'north': 5}[p['facing']]
+        elif key in ['minecraft:cave_vines_plant', 'minecraft:cave_vines']:
+            p = palette_entry['Properties']
+            if p['berries'] == 'true':
+                data = 1
+        elif key == 'minecraft:glow_lichen':
+            p = palette_entry['Properties']
+            if p['down'] == 'true':
+                data |= 1 << 0
+            if p['up'] == 'true':
+                data |= 1 << 1
+            if p['east'] == 'true':
+                data |= 1 << 2
+            if p['south'] == 'true':
+                data |= 1 << 3
+            if p['west'] == 'true':
+                data |= 1 << 4
+            if p['north'] == 'true':
+                data |= 1 << 5
 
         return (block, data)
 
@@ -1371,6 +1546,39 @@ class RegionSet(object):
             result[i::shorts_per_long] = (b[:j] >> (bits_per_value * i)) & mask
         
         return result
+
+    def _get_blockdata_v118(self, section, unrecognized_block_types, longarray_unpacker):
+        block_states = section['block_states']
+        palette = block_states.get('palette')
+        block_states_data = block_states.get('data')
+
+        if not block_states_data:
+            # This chunk is missing its block data, skip it
+            block_states_data = numpy.zeros((256,), dtype=numpy.uint16)
+
+        # Translate each entry in the palette to a 1.2-era (block, data) int pair.
+        num_palette_entries = len(palette)
+        translated_blocks = numpy.zeros((num_palette_entries,), dtype=numpy.uint16) # block IDs
+        translated_data = numpy.zeros((num_palette_entries,), dtype=numpy.uint8) # block data
+        for i in range(num_palette_entries):
+            key = palette[i]
+            try:
+                translated_blocks[i], translated_data[i] = self._get_block(key)
+            except KeyError:
+                pass    # We already have initialised arrays with 0 (= air)
+
+        # Turn the BlockStates array into a 16x16x16 numpy matrix of shorts.
+        blocks = numpy.empty((4096,), dtype=numpy.uint16)
+        data = numpy.empty((4096,), dtype=numpy.uint8)
+        block_states = longarray_unpacker(block_states_data, 4096, num_palette_entries)
+        blocks[:] = translated_blocks[block_states]
+        data[:] = translated_data[block_states]
+
+        # Turn the Data array into a 16x16x16 matrix, same as SkyLight
+        blocks = blocks.reshape((16, 16, 16))
+        data = data.reshape((16, 16, 16))
+
+        return (blocks, data)
 
     def _get_blockdata_v113(self, section, unrecognized_block_types, longarray_unpacker):
         # Translate each entry in the palette to a 1.2-era (block, data) int pair.
@@ -1497,8 +1705,15 @@ class RegionSet(object):
         if data is None:
             raise ChunkDoesntExist("Chunk %s,%s doesn't exist" % (x,z))
 
-        level = data[1]['Level']
-        chunk_data = level
+        chunk_data = data[1]
+
+        if not 'sections' in chunk_data:
+            # This world was generated pre 21w43a and thus most chunk data is contained
+            # in the "Level" key
+            chunk_data = chunk_data['Level']
+        else:
+            # This world was generated post 21w43a
+            chunk_data['Sections'] = chunk_data['sections']
 
         longarray_unpacker = self._packed_longarray_to_shorts
         if data[1].get('DataVersion', 0) >= 2529:
@@ -1531,6 +1746,8 @@ class RegionSet(object):
             # Worlds converted by Jeb's program may be missing the Biomes key.
             # Additionally, 19w09a worlds have an empty array as biomes key
             # in some cases.
+
+            # TODO: Implement paletted biomes for >21w39a
             biomes = numpy.zeros((16, 16), dtype=numpy.uint8)
         chunk_data['Biomes'] = biomes
         chunk_data['NewBiomes'] = (len(biomes.shape) == 3)
@@ -1570,7 +1787,9 @@ class RegionSet(object):
                 del blocklight
                 section['BlockLight'] = blocklight_expanded
 
-                if 'Palette' in section:
+                if 'block_states' in section:
+                    (blocks, data) = self._get_blockdata_v118(section, unrecognized_block_types, longarray_unpacker)
+                elif 'Palette' in section:
                     (blocks, data) = self._get_blockdata_v113(section, unrecognized_block_types, longarray_unpacker)
                 elif 'Data' in section:
                     (blocks, data) = self._get_blockdata_v112(section)

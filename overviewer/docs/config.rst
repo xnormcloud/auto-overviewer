@@ -15,8 +15,8 @@ Python, don't worry, it's pretty simple. Just follow the examples.
 
 .. note::
 
-    You should *always* use forward slashes ("/"), even on
-    Windows.  This is required because the backslash ("\\") has special meaning
+    You should *always* use forward slashes (``/``), even on
+    Windows.  This is required because the backslash (``\``) has special meaning
     in Python.  
 
 Examples
@@ -304,6 +304,9 @@ Observers
     ``JSObserver(outputdir[, minrefresh][, messages])``
         This will display render progress on the output map in the bottom right
         corner of the screen. ``JSObserver``.
+
+        .. note::
+            JSObserver does not work on locally opened maps, but requires a running HTTP server.
 
         * ``outputdir="<output directory path"``
             Path to overviewer output directory. For simplicity, specify this 
