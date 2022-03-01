@@ -15,7 +15,7 @@ var job = new CronJob(cron_patern, function() {
     async function main() {
         for (var server of config.servers) {
             console.log(`${server.name} render process Started!`.green);
-    
+
             console.log(`Extracting ${server.name}'s world from docker container...`.yellow)
             try {
                 shell.exec(`docker cp ${server.container_id}:/home/container/qb_multi/slot1/world /home/wrenders/sources/${server.name}`);
@@ -27,10 +27,10 @@ var job = new CronJob(cron_patern, function() {
             }
             console.log(`Extraction completed`.green);
             console.log(`Starting rendering process`.cyan)
-    
+
             var render_shell_out = shell.exec(`python${config.python_ver} ${config.minecraft_overviewer_loc} --config=./overviewer/configs/${server.name}.txt`);
             var renderResult = (render_shell_out.substring(render_shell_out.length - 28, render_shell_out.length)).replace(/\s+/g, '');
-    
+
             if (renderResult != "openindex.htmltoviewit.") {
                 console.log(`Error Minecraft Overviewer Render Failed`.red);
                 await ErrorExit(render_shell_out);
@@ -38,7 +38,7 @@ var job = new CronJob(cron_patern, function() {
                 process.exit();
             }
             console.log('Render complete!'.green);
-    
+
             console.log('Copying new assets'.yellow);
             for (var asset of server.assets) {
                 try {
@@ -51,7 +51,7 @@ var job = new CronJob(cron_patern, function() {
                 }
                 console.log(` => ${asset} copied to render folder.`.cyan);
             }
-    
+
             shell.rm('-r', `/home/wrenders/sources/${server.name}/world`);
             console.log('New Assets Copied'.green);
             await RenderComplete(server);
@@ -59,6 +59,7 @@ var job = new CronJob(cron_patern, function() {
         }
         await BulkComplete();
         console.log("Bulk worlds renders complete!".green);
+        console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
     }
 }, null, true, config.time_zone);
 job.start();
@@ -120,7 +121,7 @@ async function BulkComplete() {
                 console.log(error);
                 reject(err);
             } else {
-                console.log(`Email sent to`);
+                console.log(`Email sent to sysadmins`);
                 resolve(info);
             }
         });
@@ -154,7 +155,7 @@ async function ErrorExit(errormsg) {
                 console.log(error);
                 reject(err);
             } else {
-                console.log(`Email sent to`);
+                console.log(`Email sent to sysadmins`);
                 resolve(info);
             }
         });
