@@ -3,8 +3,8 @@ const shell = require('shelljs');
 const colors = require('colors');
 const parser = require('cron-parser');
 const nodemailer = require("nodemailer");
-const config = require('./config.json');
-const mailer_config = require('./mailer_config.json');
+const config = require(`./config/${process.argv[2] != "" ? process.argv[2] : 'config.json'}`);
+const mailer_config = require('./config/mailer_config.json');
 
 const cron_patern = `${config.min} ${config.hour} ${config.dayom} ${config.month} ${config.dayow}`;
 var interval = parser.parseExpression(cron_patern);
@@ -41,7 +41,7 @@ async function main() {
         console.log('Copying new assets'.yellow);
         for (var asset of server.assets) {
             try {
-                shell.cp(`./assets/default/${asset}`, `${config.render_out_dir}/${server.name}`);
+                shell.cp(`./assets/${config.dayow == "*" ? server.name : "default"}/${asset}`, `${config.render_out_dir}/${server.name}`);
             } catch (error) {
                 console.log('Error while copying assets to render folder'.red);
                 await ErrorExit("Assets copying process failure");
