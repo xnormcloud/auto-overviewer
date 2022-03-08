@@ -4,15 +4,30 @@ const colors = require('colors');
 const parser = require('cron-parser');
 const nodemailer = require("nodemailer");
 const mailer_config = require('./config/mailer_config.json');
-const config = require(`./config/${process.argv[2] != "" ? process.argv[2] : 'config.json'}`);
+
+const config = require(`./config/${process.argv[3] != "" ? process.argv[2] : 'config.json'}`);
+const type = config.type;
+
 const cron_patern = `${config.min} ${config.hour} ${config.dayom} ${config.month} ${config.dayow}`;
 var interval = parser.parseExpression(cron_patern);
 
-console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
-var job = new CronJob(cron_patern, function() {
-    main();
-}, null, true, config.time_zone);
-job.start();
+const mode = process.argv[2]
+if (mode.toLowerCase() != "-e" || mode.toLowerCase() != "-a") {
+    console.log(`Exiting Minecraft Auto Overviewer...`.yellow)
+    process.exit();
+}
+
+if (mode == "e"){
+    console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
+    var job = new CronJob(cron_patern, function() {
+        main();
+    }, null, true, config.time_zone);
+    job.start();
+} else {
+    main()
+    console.log(`Exiting Minecraft Auto Overviewer...`.yellow)
+    process.exit();
+}
 
 async function main() {
     for (var server of config.servers) {
@@ -112,8 +127,8 @@ async function BulkComplete() {
     const mailOptions = {
         from: `Xnorm World <${mailer_config.contacter}>`,
         to: mailer_config.admin_email,
-        subject: `Bulk Rendering Complete!`,
-        text: "All scheduled renders were completed",
+        subject: type == "bulk" ? 'Bulk Rendering Complete!' : `${config.servers[0].name} Rendering Complete!`,
+        text: "The scheduled render/s were completed",
     }
     return new Promise(function(resolve, reject) {
         transporter.sendMail(mailOptions, (error, info) => {
@@ -146,7 +161,7 @@ async function ErrorExit(errormsg) {
     const mailOptions = {
         from: `Xnorm World <${mailer_config.contacter}>`,
         to: mailer_config.admin_email,
-        subject: `⚠ System Fail`,
+        subject: type == "bulk" ? `⚠ System Fail [Bulk]` : `⚠ System Fail [${config.servers[0].name}]`,
         text: `Something went wrong, and Minecraft Auto Overviewer stopped\n\n${errormsg}`,
     }
     return new Promise(function(resolve, reject) {
