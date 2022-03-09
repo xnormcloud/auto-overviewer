@@ -5,19 +5,20 @@ const parser = require('cron-parser');
 const nodemailer = require("nodemailer");
 const mailer_config = require('./config/mailer_config.json');
 
-const config = require(`./config/${process.argv[3] != "" ? process.argv[2] : 'config.json'}`);
+const config = require(`./${process.argv[3] != "" ? process.argv[3] : 'config.json'}`);
 const type = config.type;
 
 const cron_patern = `${config.min} ${config.hour} ${config.dayom} ${config.month} ${config.dayow}`;
 var interval = parser.parseExpression(cron_patern);
 
 const mode = process.argv[2]
-if (mode.toLowerCase() != "-e" || mode.toLowerCase() != "-a") {
+if (['-e', '-a'].indexOf(mode.toLowerCase()) == -1) {
+    console.log(`Invalid param `.red + `"${mode}"`.yellow)
     console.log(`Exiting Minecraft Auto Overviewer...`.yellow)
     process.exit();
 }
 
-if (mode == "e"){
+if (mode == "-a"){
     console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
     var job = new CronJob(cron_patern, function() {
         main();
@@ -26,7 +27,6 @@ if (mode == "e"){
 } else {
     main()
     console.log(`Exiting Minecraft Auto Overviewer...`.yellow)
-    process.exit();
 }
 
 async function main() {
@@ -59,7 +59,7 @@ async function main() {
         console.log('Copying new assets'.yellow);
         for (var asset of server.assets) {
             try {
-                shell.cp(`./assets/${config.dayow == "*" ? server.name : "default"}/${asset}`, `${config.render_out_dir}/${server.name}`);
+                shell.cp(`./assets/${config.dayow.localeCompare("*") == -1 ? `${server.name}/${asset}` : "default"}/${asset}`, `${config.render_out_dir}/${server.name}`);
             } catch (error) {
                 console.log('Error while copying assets to render folder'.red);
                 await ErrorExit("Assets copying process failure");
@@ -72,11 +72,10 @@ async function main() {
         shell.rm('-r', `/home/wrenders/sources/${server.name}/world`);
         console.log('New Assets Copied'.green);
         await RenderComplete(server);
-        console.log(`${server.name} AUTO RENDER COMPLETE!`.green + ` Last Render: ${interval.prev().toString()}`.cyan);
+        console.log(`${server.name} AUTO RENDER COMPLETE!`.green);
     }
     await BulkComplete();
-    console.log("Bulk worlds renders complete!".green);
-    console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
+    mode.localeCompare("-e") == 0 ? process.exit() : console.log(`Bulk rendering Complete!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
 }
 
 async function RenderComplete(server) {
