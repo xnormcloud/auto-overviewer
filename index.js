@@ -3,17 +3,31 @@ const shell = require('shelljs');
 const colors = require('colors');
 const parser = require('cron-parser');
 const nodemailer = require("nodemailer");
-const config = require('./config/config.json');
 const mailer_config = require('./config/mailer_config.json');
+
+const config = require(`./${process.argv[3] != "" ? process.argv[3] : 'config.json'}`);
+const type = config.type;
 
 const cron_patern = `${config.min} ${config.hour} ${config.dayom} ${config.month} ${config.dayow}`;
 var interval = parser.parseExpression(cron_patern);
 
-console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
-var job = new CronJob(cron_patern, function() {
-    main();
-}, null, true, config.time_zone);
-job.start();
+const mode = process.argv[2]
+if (['-e', '-a'].indexOf(mode.toLowerCase()) == -1) {
+    console.log(`Invalid param `.red + `"${mode}"`.yellow)
+    console.log(`Exiting Minecraft Auto Overviewer...`.yellow)
+    process.exit();
+}
+
+if (mode == "-a"){
+    console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
+    var job = new CronJob(cron_patern, function() {
+        main();
+    }, null, true, config.time_zone);
+    job.start();
+} else {
+    main()
+    console.log(`Exiting Minecraft Auto Overviewer...`.yellow)
+}
 
 async function main() {
     for (var server of config.servers) {
@@ -45,7 +59,7 @@ async function main() {
         console.log('Copying new assets'.yellow);
         for (var asset of server.assets) {
             try {
-                shell.cp(`./assets/default/${asset}`, `${config.render_out_dir}/${server.name}`);
+                shell.cp(`./assets/${config.dayow.localeCompare("*") == -1 ? `${server.name}/${asset}` : "default"}/${asset}`, `${config.render_out_dir}/${server.name}`);
             } catch (error) {
                 console.log('Error while copying assets to render folder'.red);
                 await ErrorExit("Assets copying process failure");
@@ -58,11 +72,10 @@ async function main() {
         shell.rm('-r', `/home/wrenders/sources/${server.name}/world`);
         console.log('New Assets Copied'.green);
         await RenderComplete(server);
-        console.log(`${server.name} AUTO RENDER COMPLETE!`.green + ` Last Render: ${interval.prev().toString()}`.cyan);
+        console.log(`${server.name} AUTO RENDER COMPLETE!`.green);
     }
     await BulkComplete();
-    console.log("Bulk worlds renders complete!".green);
-    console.log(`Minecraft Auto Overviewer Ready!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
+    mode.localeCompare("-e") == 0 ? process.exit() : console.log(`Bulk rendering Complete!`.green + ` Next Bulk Render scheduled for ${interval.next().toString()}`.yellow);
 }
 
 async function RenderComplete(server) {
@@ -113,8 +126,8 @@ async function BulkComplete() {
     const mailOptions = {
         from: `Xnorm World <${mailer_config.contacter}>`,
         to: mailer_config.admin_email,
-        subject: `Bulk Rendering Complete!`,
-        text: "All scheduled renders were completed",
+        subject: type == "bulk" ? 'Bulk Rendering Complete!' : `${config.servers[0].name} Rendering Complete!`,
+        text: "The scheduled render/s were completed",
     }
     return new Promise(function(resolve, reject) {
         transporter.sendMail(mailOptions, (error, info) => {
@@ -147,7 +160,7 @@ async function ErrorExit(errormsg) {
     const mailOptions = {
         from: `Xnorm World <${mailer_config.contacter}>`,
         to: mailer_config.admin_email,
-        subject: `⚠ System Fail`,
+        subject: type == "bulk" ? `⚠ System Fail [Bulk]` : `⚠ System Fail [${config.servers[0].name}]`,
         text: `Something went wrong, and Minecraft Auto Overviewer stopped\n\n${errormsg}`,
     }
     return new Promise(function(resolve, reject) {
