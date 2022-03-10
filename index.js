@@ -3,7 +3,9 @@ const shell = require('shelljs');
 const colors = require('colors');
 const parser = require('cron-parser');
 const nodemailer = require("nodemailer");
+const ejs = require("ejs");
 const mailer_config = require('./config/mailer_config.json');
+
 
 const config = require(`./${process.argv[3] != "" ? process.argv[3] : 'config.json'}`);
 const type = config.type;
@@ -59,7 +61,7 @@ async function main() {
         console.log('Copying new assets'.yellow);
         for (var asset of server.assets) {
             try {
-                shell.cp(`./assets/${config.dayow.localeCompare("*") == -1 ? `${server.name}/${asset}` : "default"}/${asset}`, `${config.render_out_dir}/${server.name}`);
+                shell.cp(config.dayow.localeCompare("*") == 0 ? `./assets/${server.name}/${asset}` : `./assets/default/${asset}`, `${config.render_out_dir}/${server.name}`);
             } catch (error) {
                 console.log('Error while copying assets to render folder'.red);
                 await ErrorExit("Assets copying process failure");
@@ -99,16 +101,26 @@ async function RenderComplete(server) {
         },
     }
 
-    return new Promise(function(resolve, reject) {
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log(error);
-                reject(err);
-            } else {
-                console.log(`Email sent to ${server.name} owner/s`);
-                resolve(info);
-            }
-        });
+    ejs.renderFile("./email/template.ejs", { name: server.name, link: server.url != "" ? `https://${server.url}` : `https://${server.name}.xnorm.world`, shortedUrl: server.url != "" ? server.url : `${server.name}.xnorm.world`}, function (err, data) {
+        if (err) {
+            console.log(err);
+        } else {
+            var mailOptions = {
+                from: `Xnorm World <${mailer_config.contacter}>`,
+                to: server.email,
+                subject: `Your world render is complete!`,
+                text: "Hi! Your render is finally complete!",
+                html: data
+            };
+    
+            transporter.sendMail(mailOptions, (error, info) => {
+                if(error){
+                    console.log(error);
+                } else {
+                    console.log(`Email sent to ${server.name}'s owner/s`);
+                }
+            })
+        }
     });
 };
 
